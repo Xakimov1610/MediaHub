@@ -8,16 +8,16 @@ namespace MediaHub.Entity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid Id { get; set; }
-        
+
         [Required]
         [MinLength(1)]
         [MaxLength(5242880)]
         public byte[] Data { get; set; }
-        
+
         [Required]
         [MaxLength(255)]
         public string Title { get; set; }
-        
+
         [MaxLength(255)]
         public string AltText { get; set; }
 
@@ -31,6 +31,5 @@ namespace MediaHub.Entity
             Title = title;
             AltText = altText;
         }
-        
     }
 }

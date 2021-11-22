@@ -11,8 +11,6 @@ namespace MediaHub.Model
         [MaxLength(255)]
         public string Title { get; set; }
         
-        public string AltText { get; set; }
-        
-        
+        public string AltText { get; set; } 
     }
 }

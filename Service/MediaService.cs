@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediaHub.Data;
 using MediaHub.Entity;
@@ -25,7 +26,7 @@ namespace MediaHub.Service
                 await _context.Images.AddRangeAsync(images);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Images created in DB.");
+                _logger.LogInformation($"Images created in DB. {images.FirstOrDefault().Id}");
                 return (true, null);
             }
             catch (Exception e)
@@ -61,9 +62,16 @@ namespace MediaHub.Service
             => _context.Images.AnyAsync(i => i.Id == id);
 
         public Task<List<Image>> GetAllAsync()
-            => _context.Images.ToListAsync();
+            => _context.Images.AsNoTracking().ToListAsync();
 
-        public Task<Image> GetAsync(Guid id)
-            => _context.Images.FirstOrDefaultAsync(i => i.Id == id);
+        public async Task<Image> GetAsync(Guid id)
+        {
+            if (await ExistsAsync(id))
+            {
+                var image = await _context.Images.FirstOrDefaultAsync(i => i.Id == id);
+                return image;
+            }
+            return null;
+        }
     }
 }
