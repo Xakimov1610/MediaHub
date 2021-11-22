@@ -30,7 +30,7 @@ namespace MediaHub
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MediaDbContext>(options =>
-                options.UseSqlServer(Configuration?.GetConnectionString("MediaConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("MediaConnection")));
 
             services.AddTransient<IMediaService, MediaService>();
                 

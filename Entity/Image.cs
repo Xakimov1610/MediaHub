@@ -20,7 +20,17 @@ namespace MediaHub.Entity
         
         [MaxLength(255)]
         public string AltText { get; set; }
-    
+
+        [Obsolete("Used only for Entities binding.", true)]
+        public Image() { }
+
+        public Image(byte[] data, string title, string altText)
+        {
+            Id = Guid.NewGuid();
+            Data = data;
+            Title = title;
+            AltText = altText;
+        }
         
     }
 }

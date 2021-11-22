@@ -11,7 +11,7 @@ namespace MediaHub.Service
         Task<bool> ExistsAsync(Guid id);
         Task<Image> GetAsync(Guid id);
         Task<List<Image>> GetAllAsync();
-        Task<(bool IsSuccess, Exception Exception)> CreateAsync(Image image);
+        Task<(bool IsSuccess, Exception Exception)> CreateAsync(IEnumerable<Image> image);
         Task<(bool IsSuccess, Exception Exception)> DeleteAsync(Guid id);
     }
 }

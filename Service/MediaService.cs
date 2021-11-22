@@ -1,45 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaHub.Data;
 using MediaHub.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MediaHub.Service
 {
     public class MediaService : IMediaService
     {
-        public Task<(bool IsSuccess, Exception Exception, Image image)> CreateAsync(Image genre)
+        private readonly MediaDbContext _context;
+        private readonly ILogger<MediaService> _logger;
+
+        public MediaService(MediaDbContext context, ILogger<MediaService> logger)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _logger = logger;
+        }
+        public async Task<(bool IsSuccess, Exception Exception)> CreateAsync(IEnumerable<Image> images)
+        {
+            try
+            {
+                await _context.Images.AddRangeAsync(images);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Images created in DB.");
+                return (true, null);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"Creating image in DB failed.");
+                return (false, e);
+            }
         }
 
-        public Task<(bool IsSuccess, Exception Exception)> DeleteAsync(Guid id)
+        public async Task<(bool IsSuccess, Exception Exception)> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var image = await GetAsync(id);
+            if (image == default)
+            {
+                return (false, new Exception("Not found."));
+            }
+            try
+            {
+                _context.Images.Remove(image);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Image deleted in DB. ID: {image.Id}");
+                return (true, null);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"Deleting image in DB failed.");
+                return (false, e);
+            }
         }
 
         public Task<bool> ExistsAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ExistsAsync(string name)
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Images.AnyAsync(i => i.Id == id);
 
         public Task<List<Image>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Images.ToListAsync();
 
         public Task<Image> GetAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<(bool IsSuccess, Exception Exception)> IMediaService.CreateAsync(Image image)
-        {
-            throw new NotImplementedException();
-        }
+            => _context.Images.FirstOrDefaultAsync(i => i.Id == id);
     }
 }
